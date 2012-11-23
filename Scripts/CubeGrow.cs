@@ -8,11 +8,15 @@ public class CubeGrow : MonoBehaviour {
 	public Animation shrink;
 	public GameObject newCube;
 	public GameObject player;
+	public GameObject newCubeParent;
+	GameObject createdCube;
+	
 	public bool destructable;
 	
 	// Use this for initialization
 	void Start () {
 		player = GameObject.FindGameObjectWithTag("Player");
+		newCubeParent = GameObject.Find("Parent-NewCubes");
 	}
 	
 	// Update is called once per frame
@@ -29,7 +33,8 @@ public class CubeGrow : MonoBehaviour {
 			 player.transform.position.z > (this.gameObject.transform.parent.position + offset).z - 2 &
 			 player.transform.position.z < (this.gameObject.transform.parent.position + offset).z + 2 ))
 		{
-			Instantiate(newCube, this.gameObject.transform.parent.position + offset, Quaternion.identity);
+			createdCube = (GameObject)Instantiate(newCube, this.gameObject.transform.parent.position + offset, Quaternion.identity);
+			createdCube.transform.parent = newCubeParent.transform;
 		}
 		else { print("Fail"); }
 	}
