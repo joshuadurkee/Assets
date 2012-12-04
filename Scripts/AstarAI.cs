@@ -6,22 +6,34 @@ using Pathfinding;
 
 public class AstarAI : MonoBehaviour
 {
-     //The point to move to
-     public Vector3 targetPosition;
-	 private Seeker seeker;
-     private CharacterController controller;
-	 //The calculated path
-     public Path path;
-	 //The AI's speed per second
-     public float speed = 100;
-	 //The max distance from the AI to a waypoint for it to continue to the next waypoint
-     public float nextWaypointDistance = 3;
-	 //The waypoint we are currently moving towards
-     private int currentWaypoint = 0;
+    //The point to move to
+    public Vector3 targetPosition;
+	private Seeker seeker;
+    private CharacterController controller;
+	//The calculated path to follow
+    public Path path;
+	//The AI's speed per second
+    public float speed = 100;
+	//The max distance from the AI to a waypoint for it to continue to the next waypoint
+    public float nextWaypointDistance = 3;
+	//The waypoint we are currently moving towards
+    private int currentWaypoint = 0;
+	//A reference to the player
+	public GameObject player;
+	//The distance between the AI object & the player object
+	public float distanceToPlayer;
+	//The distance within which to attack the player
+	public float attackDistance;
+	//Should the AI attack the player?
+	public bool attackPlayer;
 	 
-	 public void Start ()
-	 {
+	public void Start ()
+	{
+		//Find the player gameobject & link it to player
+		player = GameObject.FindGameObjectWithTag("Player");
+		//Find the seeker component & link it to seeker
 		seeker = GetComponent<Seeker>();
+		//Find the character controller component & link it to controller
 		controller = GetComponent<CharacterController>();
 		//Repeatedly invoke the function to recalculate the path every second
 		InvokeRepeating("RecalcPath",0,1);
@@ -38,6 +50,12 @@ public class AstarAI : MonoBehaviour
 	}
 	public void FixedUpdate ()
 	{
+		distanceToPlayer  = (transform.position - player.transform.position).magnitude;
+		if (distanceToPlayer < attackDistance & attackPlayer)
+		{
+			targetPosition = player.transform.position;
+		}
+		
 		if (path == null)
 		{      
 			//We have no path to move after yet  
