@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
-public class CubeGrow : MonoBehaviour {
-	
+public class IndestructableCubeGrow : AbstractCubeGrow {
+
 	public Vector3 offset;
 	public Animation grow;
 	public Animation shrink;
@@ -10,8 +10,6 @@ public class CubeGrow : MonoBehaviour {
 	public GameObject player;
 	public GameObject newCubeParent;
 	GameObject createdCube;
-	
-	public bool destructable;
 	
 	// Use this for initialization
 	void Start () {
@@ -24,7 +22,7 @@ public class CubeGrow : MonoBehaviour {
 		
 	}
 	
-	void growNewCube()
+	void growCube()
 	{
 		if(!(player.transform.position.x > (this.gameObject.transform.parent.position + offset).x - 2 &
 			 player.transform.position.x < (this.gameObject.transform.parent.position + offset).x + 2 &
@@ -33,7 +31,7 @@ public class CubeGrow : MonoBehaviour {
 			 player.transform.position.z > (this.gameObject.transform.parent.position + offset).z - 2 &
 			 player.transform.position.z < (this.gameObject.transform.parent.position + offset).z + 2 ))
 		{
-			createdCube = (GameObject)Instantiate(newCube, this.gameObject.transform.parent.position + offset, Quaternion.identity);
+			createdCube = (GameObject)MonoBehaviour.Instantiate(newCube, this.gameObject.transform.parent.position + offset, Quaternion.identity);
 			createdCube.transform.parent = newCubeParent.transform;
 		}
 		else { print("Fail"); }
@@ -41,9 +39,6 @@ public class CubeGrow : MonoBehaviour {
 	
 	void shrinkCube()
 	{
-		if(destructable)
-		{
-			Destroy(this.gameObject.transform.parent.gameObject);
-		}
+			//Destroy(this.gameObject.transform.parent.gameObject);
 	}
 }

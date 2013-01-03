@@ -4,7 +4,8 @@ using System.Collections;
 public class PlayerCubeControl : MonoBehaviour {
 	
 	public GameObject cube;
-	public CubeGrow CubeGrowScript;
+	string CubeGrowScriptName;
+	AbstractCubeGrow CubeGrowScript;
 	
 	// Use this for initialization
 	void Start () {
@@ -22,7 +23,10 @@ public class PlayerCubeControl : MonoBehaviour {
 			{
 				if (hit.collider.gameObject.tag == "CubeSide")
 				{
-					hit.collider.gameObject.GetComponent<CubeGrow>().Invoke("growNewCube",0);
+					CubeGrowScriptName = hit.collider.gameObject.transform.parent.GetComponent<CubeController>().GrowScript;
+					CubeGrowScript = (AbstractCubeGrow)hit.collider.gameObject.GetComponent(CubeGrowScriptName);
+					CubeGrowScript.Invoke("growCube",0);
+//					hit.collider.gameObject.GetComponent<AbstractCubeGrow>().Invoke("growCube",0);
 				}
 			}
 		}
@@ -34,7 +38,10 @@ public class PlayerCubeControl : MonoBehaviour {
 			{
 				if (hit.collider.gameObject.tag == "CubeSide")
 				{
-					hit.collider.gameObject.GetComponent<CubeGrow>().Invoke("shrinkCube",0);
+					CubeGrowScriptName = hit.collider.gameObject.transform.parent.GetComponent<CubeController>().GrowScript;
+					CubeGrowScript = (AbstractCubeGrow)hit.collider.gameObject.GetComponent(CubeGrowScriptName);
+					CubeGrowScript.Invoke("shrinkCube",0);
+//					hit.collider.gameObject.GetComponent<AbstractCubeGrow>().Invoke("shrinkCube",0);
 				}
 			}
 		}
