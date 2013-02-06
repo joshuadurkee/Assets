@@ -4,8 +4,6 @@ using System.Collections;
 public class IndestructableCubeGrow : AbstractCubeGrow {
 
 	public Vector3 offset;
-	public Animation grow;
-	public Animation shrink;
 	public GameObject newCube;
 	public GameObject player;
 	public GameObject newCubeParent;
