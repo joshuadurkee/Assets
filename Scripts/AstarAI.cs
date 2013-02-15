@@ -15,7 +15,7 @@ public class AstarAI : MonoBehaviour
 	//The AI's speed per second
     public float speed = 100;
 	//The max distance from the AI to a waypoint for it to continue to the next waypoint
-    public float nextWaypointDistance = 3;
+    public float nextWaypointDistance = 1;
 	//The waypoint we are currently moving towards
     private int currentWaypoint = 0;
 	//A reference to the player
@@ -26,11 +26,18 @@ public class AstarAI : MonoBehaviour
 	public float attackDistance;
 	//Should the AI attack the player?
 	public bool attackPlayer;
+	//Can the AI see the player?
+	public bool seePlayer;
 	//The name of the current behavior function
 	public string behavior;
 	
 	Vector3 dir;
 	
+	//variables for the wander behavior
+	int wanderTimer;
+	int wanderTime;
+	int wanderTimeVariation;
+	int wanderDistance;
 	 
 	public void Start ()
 	{
@@ -43,7 +50,14 @@ public class AstarAI : MonoBehaviour
 		//Repeatedly invoke the function to recalculate the path every second
 		InvokeRepeating("RecalcPath",0,1);
 		//Set the beginning bevahior
-		behavior = "Attack";
+		behavior = "Move";
+		//Preset path to avoid errors
+		path = null;
+		
+		wanderTimer = 0;
+		wanderTime = 600;
+		wanderTimeVariation = Random.Range(0, 500);
+		wanderDistance = 20;
 	}
 	
 	public void OnPathComplete (Path p)
@@ -54,12 +68,33 @@ public class AstarAI : MonoBehaviour
 			path = p;
 			//Reset the waypoint counter
 			currentWaypoint = 0;
-		} 
+		}
 	}
 	
 	public void FixedUpdate ()
 	{
-		print("Invoking: " + behavior);
+		//Check if the enemy can still see the player
+		dir = (player.transform.position-transform.position).normalized;
+		RaycastHit hit;
+		if (Physics.Raycast(transform.position, dir, out hit, attackDistance))
+		{
+			if (hit.collider.gameObject.tag == "Player") 
+				{ seePlayer = true; }
+			else 
+				{ seePlayer = false; }
+		}
+		
+		if (seePlayer)
+			{ behavior = "Attack"; }
+		if (path == null)
+			{ behavior = "Stand"; }
+		else
+		{
+			if (path.error == true)
+				{ behavior = "Stand"; }
+		}
+		
+//		print("Invoking: " + behavior);
 		Invoke(behavior, 0);
 	}
 	
@@ -78,51 +113,27 @@ public class AstarAI : MonoBehaviour
 		//Set the player as the target
 		targetPosition = player.transform.position;   
 		
-		if (path != null)
-		{
-			//Calculate direction to the next waypoint  
-			dir = (path.vectorPath[currentWaypoint]-transform.position).normalized;
-			//Set magnitude based on speed
-			dir *= speed * Time.fixedDeltaTime; 
-			//Move towards the next waypoint
-			controller.SimpleMove (dir);        
-			//Check if we are close enough to the next waypoint      
-			//If we are, proceed to follow the next waypoint       
-			if (Vector3.Distance (transform.position,path.vectorPath[currentWaypoint]) < nextWaypointDistance) 
-			{          
-				currentWaypoint++;          
-				return;    
+		//Calculate direction to the next waypoint  
+		dir = (path.vectorPath[currentWaypoint]-transform.position).normalized;
+		//Set magnitude based on speed
+		dir *= speed * Time.fixedDeltaTime; 
+		//Move towards the next waypoint
+		controller.SimpleMove (dir);        
+		//Check if we are close enough to the next waypoint      
+		//If we are, proceed to follow the next waypoint       
+		if (Vector3.Distance (transform.position,path.vectorPath[currentWaypoint]) < nextWaypointDistance) 
+		{          
+			if (currentWaypoint >= path.vectorPath.Length) 
+			{       
+				Debug.Log ("End Of Path Reached");
+				behavior = "Stand";
 			}
-		}	
-		else
-		{      
-			//We have no path to move after
-			return;     
-		}        
-//		
-//		if (currentWaypoint >= path.vectorPath.Length) 
-//		{       
-//			Debug.Log ("End Of Path Reached");
-//			behavior = "Stand";
-//			return;       
-//		}
-		
-		//Check if the enemy can still see the player
-		dir = (player.transform.position-transform.position).normalized;
-		RaycastHit hit;
-		if (Physics.Raycast(transform.position, dir, out hit, attackDistance))
-		{
-			if (hit.collider.gameObject.tag == "Player") 
-				{ behavior = "Attack"; }
-			else 
-				{ behavior = "Move"; }
+			else { currentWaypoint++; } 
 		}
-	}
-	
-	//AI is wandering
-	void Wander()
-	{
-		print("Wandering...");
+		
+		if (!seePlayer) { behavior = "Move"; }
+		
+		return;
 	}
 	
 	//AI has a target, but can not see the player
@@ -131,6 +142,26 @@ public class AstarAI : MonoBehaviour
 	void Move()
 	{
 		print("Moving...");
+
+		//Calculate direction to the next waypoint  
+		dir = (path.vectorPath[currentWaypoint]-transform.position).normalized;
+		//Set magnitude based on speed
+		dir *= speed * Time.fixedDeltaTime; 
+		//Move towards the next waypoint
+		controller.SimpleMove (dir);        
+		//Check if we are close enough to the next waypoint      
+		//If we are, proceed to follow the next waypoint       
+		if (Vector3.Distance (transform.position,path.vectorPath[currentWaypoint]) < nextWaypointDistance) 
+		{          
+			if (currentWaypoint >= path.vectorPath.Length) 
+			{       
+				Debug.Log ("End Of Path Reached");
+				behavior = "Stand";
+			}
+			else { currentWaypoint++; }
+		}
+		
+		return;
 	}
 	
 	//AI has reached target and is standing, will get a wander target soon.
@@ -138,5 +169,24 @@ public class AstarAI : MonoBehaviour
 	void Stand()
 	{
 		print("Standing...");
+		if (wanderTimer < wanderTime - wanderTimeVariation)
+		{
+			wanderTimer ++;
+		}
+		else
+		{
+			behavior = "Wander";
+			wanderTimer = 0;
+			wanderTimeVariation = Random.Range(0, 500);
+		}
+	}
+	
+	//AI is wandering
+	void Wander()
+	{
+		print("Wandering...");
+		Vector3 variation = new Vector3(Random.Range(0,wanderDistance),Random.Range(0,wanderDistance),Random.Range(0,wanderDistance));
+		targetPosition = this.transform.position + variation;
+		behavior = "Move";
 	}
 }
