@@ -83,6 +83,8 @@ public class AstarAI : MonoBehaviour
 			else 
 				{ seePlayer = false; }
 		}
+		else 
+			{ seePlayer = false; }
 		
 		if (seePlayer)
 			{ behavior = "Attack"; }
@@ -131,6 +133,7 @@ public class AstarAI : MonoBehaviour
 			else { currentWaypoint++; } 
 		}
 		
+		//Check for conditions to cahnge states
 		if (!seePlayer) { behavior = "Move"; }
 		
 		return;
@@ -153,7 +156,7 @@ public class AstarAI : MonoBehaviour
 		//If we are, proceed to follow the next waypoint       
 		if (Vector3.Distance (transform.position,path.vectorPath[currentWaypoint]) < nextWaypointDistance) 
 		{          
-			if (currentWaypoint >= path.vectorPath.Length) 
+			if (currentWaypoint >= path.vectorPath.Length-1) 
 			{       
 				Debug.Log ("End Of Path Reached");
 				behavior = "Stand";
@@ -185,7 +188,7 @@ public class AstarAI : MonoBehaviour
 	void Wander()
 	{
 		print("Wandering...");
-		Vector3 variation = new Vector3(Random.Range(0,wanderDistance),Random.Range(0,wanderDistance),Random.Range(0,wanderDistance));
+		Vector3 variation = new Vector3(Random.Range(0,wanderDistance),0 ,Random.Range(0,wanderDistance));
 		targetPosition = this.transform.position + variation;
 		behavior = "Move";
 	}
