@@ -8,12 +8,13 @@ public class AstarAI : MonoBehaviour
 {
 	private Seeker seeker;							//The attached seeker component
     private CharacterController controller;			//The attached character controller component
-	private int currentWaypoint = 0;				//The waypoint we are currently moving towards
+	private int currentWaypoint;					//The waypoint we are currently moving towards
 
     public Vector3 targetPosition;					//The point to move to
     public Path path;								//The calculated path to follow
-    public float speed = 100;						//The AI's speed per second
-    public float nextWaypointDistance = 1;			//The max distance from the AI to a waypoint for it to continue to the next waypoint
+    public float speed;								//The AI's movement speed
+	public float rotateSpeed;						//The AI's rotation speed
+    public float nextWaypointDistance;				//The max distance from the AI to a waypoint for it to continue to the next waypoint
 	public GameObject player;						//A reference to the player
 	public float distanceToPlayer;					//The distance between the AI object & the player object
 	public float attackDistance;					//The distance within which to attack the player
@@ -24,10 +25,10 @@ public class AstarAI : MonoBehaviour
 	Vector3 dir;
 	
 	//variables for the wander behavior
-	int wanderTimer;
-	int wanderTime;
-	int wanderTimeVariation;
-	int wanderDistance;
+	
+	double wanderTime;								//The next time to wander at
+	public int wanderDistance;
+	bool firstStand;
 	 
 	public void Start ()
 	{
@@ -40,14 +41,9 @@ public class AstarAI : MonoBehaviour
 		//Repeatedly invoke the function to recalculate the path every second
 		InvokeRepeating("RecalcPath",0,1);
 		//Set the beginning bevahior
-		behavior = "Move";
+		behavior = "Stand";
 		//Preset path to avoid errors
 		path = null;
-		
-		wanderTimer = 0;
-		wanderTime = 600;
-		wanderTimeVariation = Random.Range(0, 500);
-		wanderDistance = 20;
 	}
 	
 	public void OnPathComplete (Path p)
@@ -77,14 +73,17 @@ public class AstarAI : MonoBehaviour
 			{ seePlayer = false; }
 		
 		if (seePlayer)
-			{ behavior = "Attack"; }
+		{
+			behavior = "Attack";
+			animation.Play("attack");
+		}
+		else
+			{ animation.Play("idle"); }
+		
 		if (path == null)
 			{ behavior = "Stand"; }
-		else
-		{
-			if (path.error == true)
-				{ behavior = "Stand"; }
-		}
+		else if (path.error == true)
+			{ behavior = "Stand"; }
 		
 //		print("Invoking: " + behavior);
 		Invoke(behavior, 0);
@@ -96,6 +95,39 @@ public class AstarAI : MonoBehaviour
 		seeker.StartPath (transform.position,targetPosition, OnPathComplete);
 		return;
 	}
+
+	/// <summary>
+	/// Moves to target.
+	/// </summary>
+
+	void MoveToTarget ()
+	{
+		//******Rotate towards the target******
+		// Find the relative place in the world where the target is located
+		var relativeLocation = transform.InverseTransformPoint(path.vectorPath[currentWaypoint]);
+		var angle = Mathf.Atan2 (relativeLocation.x, relativeLocation.z) * Mathf.Rad2Deg;
+		// Clamp it with the max rotation speed so he doesn't move too fast
+		var maxRotation = rotateSpeed * Time.deltaTime;
+		var clampedAngle = Mathf.Clamp(angle, -maxRotation, maxRotation);	
+		// Rotate
+		transform.Rotate(0, clampedAngle, 0);
+		
+		//******Move forward******
+		controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime); 
+		
+		
+		//Check if we are close enough to the next waypoint      
+		//If we are, proceed to follow the next waypoint       
+		if (Vector3.Distance (transform.position,path.vectorPath[currentWaypoint]) < nextWaypointDistance) 
+		{          
+			if (currentWaypoint >= path.vectorPath.Length-1) 
+			{       
+				Debug.Log ("End Of Path Reached");
+				behavior = "Stand";
+			}
+			else { currentWaypoint++; }
+		}
+	}
 	
 	//AI is chasing and attacking the player
 	void Attack()
@@ -105,23 +137,7 @@ public class AstarAI : MonoBehaviour
 		//Set the player as the target
 		targetPosition = player.transform.position;   
 		
-		//Calculate direction to the next waypoint  
-		dir = (path.vectorPath[currentWaypoint]-transform.position).normalized;
-		//Set magnitude based on speed
-		dir *= speed * Time.fixedDeltaTime; 
-		//Move towards the next waypoint
-		controller.SimpleMove (dir);        
-		//Check if we are close enough to the next waypoint      
-		//If we are, proceed to follow the next waypoint       
-		if (Vector3.Distance (transform.position,path.vectorPath[currentWaypoint]) < nextWaypointDistance) 
-		{          
-			if (currentWaypoint >= path.vectorPath.Length) 
-			{       
-				Debug.Log ("End Of Path Reached");
-				behavior = "Stand";
-			}
-			else { currentWaypoint++; } 
-		}
+		MoveToTarget ();
 		
 		//Check for conditions to cahnge states
 		if (!seePlayer) { behavior = "Move"; }
@@ -136,23 +152,7 @@ public class AstarAI : MonoBehaviour
 	{
 		print("Moving...");
 
-		//Calculate direction to the next waypoint  
-		dir = (path.vectorPath[currentWaypoint]-transform.position).normalized;
-		//Set magnitude based on speed
-		dir *= speed * Time.fixedDeltaTime; 
-		//Move towards the next waypoint
-		controller.SimpleMove (dir);        
-		//Check if we are close enough to the next waypoint      
-		//If we are, proceed to follow the next waypoint       
-		if (Vector3.Distance (transform.position,path.vectorPath[currentWaypoint]) < nextWaypointDistance) 
-		{          
-			if (currentWaypoint >= path.vectorPath.Length-1) 
-			{       
-				Debug.Log ("End Of Path Reached");
-				behavior = "Stand";
-			}
-			else { currentWaypoint++; }
-		}
+		MoveToTarget ();
 		
 		return;
 	}
@@ -162,15 +162,15 @@ public class AstarAI : MonoBehaviour
 	void Stand()
 	{
 		print("Standing...");
-		if (wanderTimer < wanderTime - wanderTimeVariation)
-		{
-			wanderTimer ++;
-		}
-		else
+		if (wanderTime < Time.time)
 		{
 			behavior = "Wander";
-			wanderTimer = 0;
-			wanderTimeVariation = Random.Range(0, 500);
+			firstStand = true;
+		}
+		else if (firstStand)
+		{
+			wanderTime = Time.time + Random.value * 10.0;
+			firstStand = false;
 		}
 	}
 	
@@ -178,7 +178,7 @@ public class AstarAI : MonoBehaviour
 	void Wander()
 	{
 		print("Wandering...");
-		Vector3 variation = new Vector3(Random.Range(0,wanderDistance),0 ,Random.Range(0,wanderDistance));
+		Vector3 variation = new Vector3(Random.Range(-wanderDistance,wanderDistance),0 ,Random.Range(-wanderDistance,wanderDistance));
 		targetPosition = this.transform.position + variation;
 		behavior = "Move";
 	}
