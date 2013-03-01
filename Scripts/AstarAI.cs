@@ -6,30 +6,20 @@ using Pathfinding;
 
 public class AstarAI : MonoBehaviour
 {
-    //The point to move to
-    public Vector3 targetPosition;
-	private Seeker seeker;
-    private CharacterController controller;
-	//The calculated path to follow
-    public Path path;
-	//The AI's speed per second
-    public float speed = 100;
-	//The max distance from the AI to a waypoint for it to continue to the next waypoint
-    public float nextWaypointDistance = 1;
-	//The waypoint we are currently moving towards
-    private int currentWaypoint = 0;
-	//A reference to the player
-	public GameObject player;
-	//The distance between the AI object & the player object
-	public float distanceToPlayer;
-	//The distance within which to attack the player
-	public float attackDistance;
-	//Should the AI attack the player?
-	public bool attackPlayer;
-	//Can the AI see the player?
-	public bool seePlayer;
-	//The name of the current behavior function
-	public string behavior;
+	private Seeker seeker;							//The attached seeker component
+    private CharacterController controller;			//The attached character controller component
+	private int currentWaypoint = 0;				//The waypoint we are currently moving towards
+
+    public Vector3 targetPosition;					//The point to move to
+    public Path path;								//The calculated path to follow
+    public float speed = 100;						//The AI's speed per second
+    public float nextWaypointDistance = 1;			//The max distance from the AI to a waypoint for it to continue to the next waypoint
+	public GameObject player;						//A reference to the player
+	public float distanceToPlayer;					//The distance between the AI object & the player object
+	public float attackDistance;					//The distance within which to attack the player
+	public bool attackPlayer;						//Should the AI attack the player?
+	public bool seePlayer;							//Can the AI see the player?
+	public string behavior;							//The name of the current behavior function
 	
 	Vector3 dir;
 	
