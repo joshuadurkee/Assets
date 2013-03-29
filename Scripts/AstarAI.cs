@@ -43,6 +43,7 @@ public class AstarAI : MonoBehaviour
 	//Miscellaneous variables
 	private CharacterController controller;			//The attached character controller component
 	Vector3 dir;
+//	public int fallDistance;						//The max height of a ledge the AI will run off of
 	
 	public void Start ()
 	{
@@ -65,7 +66,7 @@ public class AstarAI : MonoBehaviour
 		distanceToPlayer = Vector3.Distance(this.transform.position, player.transform.position);
 		if(distanceToPlayer < attackRange)
 		{
-			Debug.Log("Launching player");
+			//Debug.Log("Launching player");
 			player.GetComponent<ImpactReciever>().dir = attackDir;
 			player.GetComponent<ImpactReciever>().force = attackStrength;
 			player.GetComponent<ImpactReciever>().Invoke("AddImpact",0);
@@ -87,18 +88,19 @@ public class AstarAI : MonoBehaviour
 		else 
 			{ seePlayer = false; }
 			
-		if (seePlayer)
+		
+		if (path == null)
+			{ behavior = "Stand"; }
+		else 
+		{
+			if (seePlayer)
 			{
 				behavior = "Attack";
 				animation.Play("attack");
 			}
 			else
 				{ animation.Play("idle"); }
-		
-		if (path == null)
-			{ behavior = "Stand"; }
-		else 
-		{			
+					
 			if (path.error == true)
 			{
 				behavior = "Stand";
@@ -131,7 +133,7 @@ public class AstarAI : MonoBehaviour
 	
 	public void OnPathComplete (Path p)
 	{
-		Debug.Log ("Yay, we got a path back. Did it have an error? "+p.error);
+		//Debug.Log ("Yay, we got a path back. Did it have an error? "+p.error);
 		if (!p.error)
 		{
 			path = p;
@@ -173,8 +175,22 @@ public class AstarAI : MonoBehaviour
 		// Rotate
 		transform.Rotate(0, clampedAngle, 0);
 		
+		//******Check for platform under the next waypoint*****
+//		dir = Vector3.down;
+//		RaycastHit hit;
+//		bool safeMove = true;
+//		if (Physics.Raycast(path.vectorPath[currentWaypoint], dir, out hit, fallDistance))
+//		{
+//			if (hit.collider.gameObject.tag == "CubeSide") 
+//				{ safeMove = true; }
+//			else 
+//				{ safeMove = false; }
+//		}
+		
 		//******Move forward******
-		controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime); 
+		controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime);
+//		if (safeMove)
+//			{ controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime); }
 		
 		
 		//Check if we are close enough to the next waypoint      
@@ -183,7 +199,7 @@ public class AstarAI : MonoBehaviour
 		{          
 			if (currentWaypoint >= path.vectorPath.Length-1) 
 			{       
-				Debug.Log ("End Of Path Reached");
+				//Debug.Log ("End Of Path Reached");
 				behavior = "Stand";
 			}
 			else { currentWaypoint++; }
@@ -193,7 +209,7 @@ public class AstarAI : MonoBehaviour
 	//AI is chasing and attacking the player
 	void Attack()
 	{
-		Debug.Log("Attacking...");
+		//Debug.Log("Attacking...");
 		
 		//Set the player as the target
 		targetPosition = player.transform.position;   
@@ -211,7 +227,7 @@ public class AstarAI : MonoBehaviour
 	//May not need this behavior
 	void Move()
 	{
-		Debug.Log("Moving...");
+		//Debug.Log("Moving...");
 
 		MoveToTarget ();
 		
@@ -222,7 +238,7 @@ public class AstarAI : MonoBehaviour
 	//May not need this behavior
 	void Stand()
 	{
-		Debug.Log("Standing...");
+		//Debug.Log("Standing...");
 		if (wanderTime < Time.time)
 		{
 			behavior = "Wander";
@@ -238,7 +254,7 @@ public class AstarAI : MonoBehaviour
 	//AI is wandering
 	void Wander()
 	{
-		Debug.Log("Wandering...");
+		//Debug.Log("Wandering...");
 		Vector3 variation = new Vector3(Random.Range(-wanderDistance,wanderDistance),0 ,Random.Range(-wanderDistance,wanderDistance));
 		targetPosition = this.transform.position + variation;
 		behavior = "Move";
