@@ -16,8 +16,8 @@ public class SceneController : MonoBehaviour {
 	public float objectCheckingBuffer;
 	//--------------------------------------------------------
 	
-	public GameObject baseFieldParent;
 	public GameObject baseCube;
+	GameObject baseFieldParent;
 	GameObject newBaseCube;
 	public int halfBaseCubesWidth;
 	public int halfBaseCubesLength;
@@ -27,14 +27,7 @@ public class SceneController : MonoBehaviour {
 		
 		baseFieldParent = GameObject.Find("Parent-BaseCubes");
 		
-		for(int i=-halfBaseCubesWidth; i<halfBaseCubesWidth; i++)
-		{
-			for(int j=-halfBaseCubesLength; j<halfBaseCubesLength; j++)
-			{
-				newBaseCube = (GameObject)Instantiate(baseCube, new Vector3((i*cubeSize)+(cubeSize/2),baseLayerHeight-(cubeSize/2),(j*cubeSize)+(cubeSize/2)) , Quaternion.identity);
-				newBaseCube.transform.parent = baseFieldParent.transform;
-			}
-		}
+		//CreatObjectField (baseFieldParent, halfBaseCubesWidth, halfBaseCubesLength);
 	
 	}
 	
@@ -42,15 +35,40 @@ public class SceneController : MonoBehaviour {
 	void Update () {
 	
 	}
-	
-	public bool ObjectInCubeArea (GameObject obj, Vector3 pos, float width)
+
+	void CreatObjectField (GameObject obj, int halfWidth, int halfLength)
 	{
-		width += objectCheckingBuffer;
-		return (obj.transform.position.x > pos.x - width &
-	 			obj.transform.position.x < pos.x + width &
-	 			obj.transform.position.y > pos.y - width &
-	 			obj.transform.position.y < pos.y + width &
-	 			obj.transform.position.z > pos.z - width &
-	 			obj.transform.position.z < pos.z + width );
+		for(int i=-halfWidth; i<halfWidth; i++)
+		{
+			for(int j=-halfLength; j<halfLength; j++)
+			{
+				newBaseCube = (GameObject)Instantiate(baseCube, new Vector3((i*cubeSize)+(cubeSize/2),baseLayerHeight-(cubeSize/2),(j*cubeSize)+(cubeSize/2)) , Quaternion.identity);
+				newBaseCube.transform.parent = baseFieldParent.transform;
+			}
+		}
+	}
+	
+	public bool TargetInCubeArea (Vector3 target, Vector3 pos, float width)
+	{
+		width += objectCheckingBuffer*2;
+		return (target.x > pos.x - width/2 &
+	 			target.x < pos.x + width/2 &
+	 			target.y > pos.y - width/2 &
+	 			target.y < pos.y + width/2 &
+	 			target.z > pos.z - width/2 &
+	 			target.z < pos.z + width/2 );
+	}
+	
+	public bool TargetInArea (Vector3 target, Vector3 pos, Vector3 area)
+	{
+		area.x += objectCheckingBuffer*2;
+		area.y += objectCheckingBuffer*2;
+		area.z += objectCheckingBuffer*2;
+		return (target.x > pos.x - area.x/2 &
+	 			target.x < pos.x + area.x/2 &
+	 			target.y > pos.y - area.y/2 &
+	 			target.y < pos.y + area.y/2 &
+	 			target.z > pos.z - area.z/2 &
+	 			target.z < pos.z + area.z/2 );
 	}
 }

@@ -43,7 +43,7 @@ public class AstarAI : MonoBehaviour
 	//Miscellaneous variables
 	private CharacterController controller;			//The attached character controller component
 	Vector3 dir;
-//	public int fallDistance;						//The max height of a ledge the AI will run off of
+	public int fallDistance;						//The max height of a ledge the AI will run off of
 	
 	public void Start ()
 	{
@@ -74,7 +74,9 @@ public class AstarAI : MonoBehaviour
 	}
 	
 	public void FixedUpdate ()
-	{		
+	{	
+		if(player == null) { return; }
+		
 		//Check if the enemy can still see the player
 		dir = (player.transform.position-transform.position).normalized;
 		RaycastHit hit;
@@ -112,6 +114,8 @@ public class AstarAI : MonoBehaviour
 		Invoke(behavior, 0);
 	}
 	
+//	Failed methods of getting the eb=nemy to knoc the player around
+	
 //	void OnControllerColliderHit(ControllerColliderHit hit)
 //	{
 //		Debug.Log("collision");
@@ -131,6 +135,16 @@ public class AstarAI : MonoBehaviour
 //		}
 //	}
 	
+//	IEnumerator Knockback()
+//	{
+//	    var startTime = Time.time;
+//	    while(Time.time < (startTime + knockbackDuration))
+//		{
+//	        controller.SimpleMove(attackDir*attackStrength);
+//	        yield return null;
+//	    }
+//	}
+	
 	public void OnPathComplete (Path p)
 	{
 		//Debug.Log ("Yay, we got a path back. Did it have an error? "+p.error);
@@ -148,23 +162,16 @@ public class AstarAI : MonoBehaviour
 		seeker.StartPath (transform.position,targetPosition, OnPathComplete);
 		return;
 	}
-	
-	IEnumerator Knockback()
-	{
-	    var startTime = Time.time;
-	    while(Time.time < (startTime + knockbackDuration))
-		{
-	        controller.SimpleMove(attackDir*attackStrength);
-	        yield return null;
-	    }
-	}
-	
+		
 	/// <summary>
 	/// Moves to target.
 	/// </summary>
 
 	void MoveToTarget ()
 	{
+		//let gravity take effect
+		controller.SimpleMove (Vector3.zero);
+		
 		//******Rotate towards the target******
 		// Find the relative place in the world where the target is located
 		var relativeLocation = transform.InverseTransformPoint(path.vectorPath[currentWaypoint]);
@@ -176,21 +183,20 @@ public class AstarAI : MonoBehaviour
 		transform.Rotate(0, clampedAngle, 0);
 		
 		//******Check for platform under the next waypoint*****
-//		dir = Vector3.down;
-//		RaycastHit hit;
-//		bool safeMove = true;
-//		if (Physics.Raycast(path.vectorPath[currentWaypoint], dir, out hit, fallDistance))
-//		{
-//			if (hit.collider.gameObject.tag == "CubeSide") 
-//				{ safeMove = true; }
-//			else 
-//				{ safeMove = false; }
-//		}
+		dir = Vector3.down;
+		RaycastHit hit;
+		bool safeMove = true;
+		if (!Physics.Raycast(path.vectorPath[currentWaypoint], dir, out hit, fallDistance))
+		{
+			//safeMove = false;
+			behavior = "Stand";
+		}
 		
 		//******Move forward******
-		controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime);
-//		if (safeMove)
-//			{ controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime); }
+		if (safeMove)
+		{ 
+			controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime);
+		}
 		
 		
 		//Check if we are close enough to the next waypoint      
