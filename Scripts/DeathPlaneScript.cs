@@ -20,6 +20,7 @@ public class DeathPlaneScript : MonoBehaviour {
 		if (other.tag == "Player")
 		{
 			//Do something
+			Application.LoadLevel(0);
 		}
 		Destroy(other.gameObject);
 	}
