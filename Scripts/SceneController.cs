@@ -14,26 +14,33 @@ public class SceneController : MonoBehaviour {
 	public float cubeSize;
 	public float baseLayerHeight;
 	public float objectCheckingBuffer;
+	public int   cubeCharges;
+	public int   maxCubeCharges;
 	//--------------------------------------------------------
 	
-	public GameObject baseCube;
 	GameObject baseFieldParent;
 	GameObject newBaseCube;
-	public int halfBaseCubesWidth;
-	public int halfBaseCubesLength;
+	public GameObject baseCube;
+	public int halfBaseFieldWidth;
+	public int halfBaseFieldLength;
+	public GUIStyle style;
 
 	// Use this for initialization
 	void Start () {
 		
 		baseFieldParent = GameObject.Find("Parent-BaseCubes");
 		
-		//CreatObjectField (baseFieldParent, halfBaseCubesWidth, halfBaseCubesLength);
-	
+		//CreatObjectField (baseFieldParent, halfBaseFieldWidth, halfBaseFieldLength);	
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
+	}
+	
+	void OnGUI ()
+	{
+		GUI.Box(new Rect(Screen.width/20, Screen.height/20, 100, 50), cubeCharges.ToString(), style);
 	}
 
 	void CreatObjectField (GameObject obj, int halfWidth, int halfLength)

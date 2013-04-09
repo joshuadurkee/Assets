@@ -75,12 +75,14 @@ public class BasicCubeGrow : AbstractCubeGrow {
 			
 			createdCube = (GameObject)MonoBehaviour.Instantiate(newCube, this.gameObject.transform.parent.position + offset, Quaternion.identity);
 			createdCube.transform.parent = newCubeParent.transform;
+			Camera.mainCamera.GetComponent<SceneController>().cubeCharges--;
 		}
 		else { print("Player in the way..."); }
 	}
 	
 	void shrinkCube()
 	{
-			Destroy(this.gameObject.transform.parent.gameObject);
+		Destroy(this.gameObject.transform.parent.gameObject);
+		Camera.mainCamera.GetComponent<SceneController>().cubeCharges++;
 	}
 }

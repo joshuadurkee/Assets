@@ -3,7 +3,8 @@ using System.Collections;
 
 public class StartScreenController : MonoBehaviour {
 	
-	GUIText font;
+	public GUIStyle style;
+	public GUIStyle titleStyle;
 	bool instructions;
 	
 	string instMessage 		= "The goal of this game is to " +

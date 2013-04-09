@@ -15,7 +15,7 @@ public class PlayerCubeControl : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
-		if (Input.GetMouseButtonDown(0))
+		if (Input.GetMouseButtonDown(0) && Camera.mainCamera.GetComponent<SceneController>().cubeCharges > 0)
 		{
 			RaycastHit hit;
 			Ray ray = camera.ScreenPointToRay(new Vector3(camera.pixelWidth/2, camera.pixelHeight/2, 0));
