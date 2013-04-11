@@ -30,7 +30,7 @@ public class SceneController : MonoBehaviour {
 		
 		baseFieldParent = GameObject.Find("Parent-BaseCubes");
 		
-		//CreatObjectField (baseFieldParent, halfBaseFieldWidth, halfBaseFieldLength);	
+		//CreatObjectField (baseFieldParent, halfBaseFieldWidth, halfBaseFieldLength);
 	}
 	
 	// Update is called once per frame

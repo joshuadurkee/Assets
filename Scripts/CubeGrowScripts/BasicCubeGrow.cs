@@ -77,7 +77,7 @@ public class BasicCubeGrow : AbstractCubeGrow {
 			createdCube.transform.parent = newCubeParent.transform;
 			Camera.mainCamera.GetComponent<SceneController>().cubeCharges--;
 		}
-		else { print("Player in the way..."); }
+//		else { Debug.Log("Player in the way..."); }
 	}
 	
 	void shrinkCube()

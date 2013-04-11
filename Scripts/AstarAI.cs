@@ -67,7 +67,9 @@ public class AstarAI : MonoBehaviour
 		if(distanceToPlayer < attackRange)
 		{
 			//Debug.Log("Launching player");
-			player.GetComponent<ImpactReciever>().dir = attackDir;
+			attackDir = (player.transform.position-transform.position).normalized;
+			attackDir.y += 1;
+			player.GetComponent<ImpactReciever>().dir = attackDir*20;
 			player.GetComponent<ImpactReciever>().force = attackStrength;
 			player.GetComponent<ImpactReciever>().Invoke("AddImpact",0);
 		}
