@@ -32,6 +32,7 @@ public class StartScreenController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		//guiText.font = font;
+		Screen.lockCursor = false;
 	}
 	
 	// Update is called once per frame

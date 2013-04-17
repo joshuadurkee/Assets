@@ -29,6 +29,7 @@ public class SceneController : MonoBehaviour {
 	void Start () {
 		
 		baseFieldParent = GameObject.Find("Parent-BaseCubes");
+		Screen.lockCursor = true;
 		
 		//CreatObjectField (baseFieldParent, halfBaseFieldWidth, halfBaseFieldLength);
 	}
