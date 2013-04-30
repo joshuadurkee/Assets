@@ -43,6 +43,7 @@ public class AstarAI : MonoBehaviour
 	//Miscellaneous variables
 	private CharacterController controller;			//The attached character controller component
 	Vector3 dir;
+	Vector3 pos;
 	public int fallDistance;						//The max height of a ledge the AI will run off of
 	
 	public void Start ()
@@ -186,12 +187,12 @@ public class AstarAI : MonoBehaviour
 		
 		//******Check for platform under the next waypoint*****
 		dir = Vector3.down;
+		pos = transform.position + transform.TransformDirection(Vector3.forward);
 		RaycastHit hit;
 		bool safeMove = true;
-		if (!Physics.Raycast(path.vectorPath[currentWaypoint], dir, out hit, fallDistance))
+		if (!Physics.Raycast(pos, dir, out hit, fallDistance))
 		{
-			//safeMove = false;
-			behavior = "Stand";
+			safeMove = false;
 		}
 		
 		//******Move forward******
@@ -199,6 +200,7 @@ public class AstarAI : MonoBehaviour
 		{ 
 			controller.SimpleMove (transform.TransformDirection(Vector3.forward) * speed * Time.deltaTime);
 		}
+		else { behavior = "Stand"; }
 		
 		
 		//Check if we are close enough to the next waypoint      
