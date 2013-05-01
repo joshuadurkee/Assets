@@ -11,11 +11,13 @@ public class SceneController : MonoBehaviour {
 	
 	//--------------------------------------------------------
 	//Global Variables
-	public float cubeSize;
-	public float baseLayerHeight;
-	public float objectCheckingBuffer;
-	public int   cubeCharges;
-	public int   maxCubeCharges;
+	public float 		cubeSize;
+	public float 		baseLayerHeight;
+	public float 		objectCheckingBuffer;
+	public int   		cubeCharges;
+	public int   		maxCubeCharges;
+	public Vector3		respawnLocation;
+	public GameObject	player;
 	//--------------------------------------------------------
 	
 	GameObject baseFieldParent;
@@ -30,6 +32,8 @@ public class SceneController : MonoBehaviour {
 		
 		baseFieldParent = GameObject.Find("Parent-BaseCubes");
 		Screen.lockCursor = true;
+		player = GameObject.FindGameObjectWithTag("Player");
+		respawnLocation = player.transform.position;
 		
 		//CreatObjectField (baseFieldParent, halfBaseFieldWidth, halfBaseFieldLength);
 	}

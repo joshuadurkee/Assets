@@ -20,8 +20,8 @@ public class DeathPlaneScript : MonoBehaviour {
 		if (other.tag == "Player")
 		{
 			//Do something
-			Application.LoadLevel(0);
+			other.transform.position = Camera.mainCamera.GetComponent<SceneController>().respawnLocation;
 		}
-		Destroy(other.gameObject);
+		else { Destroy(other.gameObject); }
 	}
 }

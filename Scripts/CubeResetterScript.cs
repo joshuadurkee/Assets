@@ -24,6 +24,7 @@ public class CubeResetterScript : MonoBehaviour {
 				Destroy(newCubeParent.transform.GetChild(i).gameObject);
 			}
 			Camera.mainCamera.GetComponent<SceneController>().cubeCharges = Camera.mainCamera.GetComponent<SceneController>().maxCubeCharges;
+			Camera.mainCamera.GetComponent<SceneController>().respawnLocation = transform.position;
 		}
 	}
 }
