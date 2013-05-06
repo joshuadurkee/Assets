@@ -15,14 +15,22 @@ public class StartScreenController : MonoBehaviour {
 								"displayed in the top left corner of the screen.\n" +
 								"You can destroy any blocks you have created,\n" +
 								"allowing you to place more blocks.";
-	string instMessage2		=	"Creating blocks allows you to affect more than\n" +
+	string instMessage2		=	"In order to create a block, you must point the\n" +
+							 	"crosshair in the center of the screen at the\n" +
+							 	"side of an existing block, and you must also be\n" +
+								"close enough to the block the crosshair is\n" +
+								"pointing at.\n\n" +
+								"If both these requirements are met, the\n" +
+								"crosshair will be a bluish color.\n" +
+								"If not, the crosshair will be a reddish color.";
+	string instMessage3		=	"Creating blocks allows you to affect more than\n" +
 								"just your movement abilities if you create a\n" +
 								"block in the way of an enemy, that enemy will\n" +
 								"be pushed by the block.  If there is another\n" +
 								"block on the other side of the enemy, the enemy\n" +
 								"will be killed instead.  Use these methods to\n" +
 								"take the advantage!";
-	string instMessage3		=	"The fancy white particle effect signals a cube\n" +
+	string instMessage4		=	"The fancy white particle effect signals a cube\n" +
 	 							"resetter.  A cube resetter will remove all blocks\n" +
 	 							"you have created, and refund all your cube charges.\n" +
 	 							"They will also act as checkpoints, and you will\n" +
@@ -37,7 +45,8 @@ public class StartScreenController : MonoBehaviour {
 								"D/Right Arrow: Move Right\n" +
 								"Mouse Move: Look Around\n" +
 								"Left Click (any block): Create Block\n" +
-								"Right Click (a block you've created): Destroy Block";
+								"Right Click (a block you've created): Destroy Block\n" +
+								"Escape: Pause/Unpause the game";
 	string gameTitle 		= "Blocks & Bunnies";
 	string startButtonText 	= "Start";
 	string instButtonText 	= "Instructions";
@@ -81,6 +90,11 @@ public class StartScreenController : MonoBehaviour {
 				instructions++;
 			break;
 		case 4:
+			GUI.Box(new Rect(3*Screen.width/8, Screen.height/3, Screen.width/4, Screen.height/3), instMessage4);
+			if (GUI.Button(new Rect(3*Screen.width/7, (Screen.height/2)+60, Screen.width/7, 30), nextButtonText))
+				instructions = 5;
+			break;
+		case 5:
 			GUI.Box(new Rect(3*Screen.width/8, Screen.height/3, Screen.width/4, Screen.height/3), controlsMessage);
 			if (GUI.Button(new Rect(3*Screen.width/7, (Screen.height/2)+60, Screen.width/7, 30), nextButtonText))
 				instructions = 0;
