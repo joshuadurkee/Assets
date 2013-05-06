@@ -45,7 +45,7 @@ public class StartScreenController : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		//guiText.font = font;
+		Time.timeScale = 1f;
 		Screen.lockCursor = false;
 	}
 	

@@ -9,8 +9,7 @@ using System.Collections;
 
 public class SceneController : MonoBehaviour {
 	
-	//--------------------------------------------------------
-	//Global Variables
+	//--------------------Global Variables--------------------
 	public float 		cubeSize;
 	public float 		baseLayerHeight;
 	public float 		objectCheckingBuffer;
@@ -18,14 +17,20 @@ public class SceneController : MonoBehaviour {
 	public int   		maxCubeCharges;
 	public Vector3		respawnLocation;
 	public GameObject	player;
+	public int			playerRange;
 	//--------------------------------------------------------
 	
-	GameObject baseFieldParent;
-	GameObject newBaseCube;
-	public GameObject baseCube;
-	public int halfBaseFieldWidth;
-	public int halfBaseFieldLength;
-	public GUIStyle style;
+	GameObject 			baseFieldParent;
+	GameObject 			newBaseCube;
+	public GameObject 	baseCube;
+	public int 			halfBaseFieldWidth;
+	public int 			halfBaseFieldLength;
+	public GUIStyle 	style;
+	bool 				paused;
+	
+	string 				pausedText 		= "Paused";
+	string 				continueText 	= "Continue";
+	string 				mainMenuText 	= "Main Menu";
 
 	// Use this for initialization
 	void Start () {
@@ -34,18 +39,28 @@ public class SceneController : MonoBehaviour {
 		Screen.lockCursor = true;
 		player = GameObject.FindGameObjectWithTag("Player");
 		respawnLocation = player.transform.position;
+		paused = false;
 		
 		//CreatObjectField (baseFieldParent, halfBaseFieldWidth, halfBaseFieldLength);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if (Input.GetKeyDown(KeyCode.Escape)) { togglePause(); }
 	}
 	
 	void OnGUI ()
 	{
 		GUI.Box(new Rect(Screen.width/20, Screen.height/20, 100, 50), cubeCharges.ToString(), style);
+		
+		if(paused)
+		{
+			GUI.Box(new Rect(3*Screen.width/8, Screen.height/3, Screen.width/4, Screen.height/3), pausedText);
+			if (GUI.Button(new Rect(3*Screen.width/7, 6*Screen.height/13, Screen.width/7, Screen.height/13), continueText))
+				togglePause();
+			if (GUI.Button(new Rect(3*Screen.width/7, 7.25f*Screen.height/13, Screen.width/7, Screen.height/13), mainMenuText))
+				Application.LoadLevel(0);
+		}
 	}
 
 	void CreatObjectField (GameObject obj, int halfWidth, int halfLength)
@@ -82,5 +97,21 @@ public class SceneController : MonoBehaviour {
 	 			target.y < pos.y + area.y/2 &
 	 			target.z > pos.z - area.z/2 &
 	 			target.z < pos.z + area.z/2 );
+	}
+	
+	void togglePause()
+	{
+		if (paused)
+		{
+			Time.timeScale = 1f;
+			Screen.lockCursor = true;
+			paused = false;
+		}
+		else
+		{
+			Time.timeScale = 0f;
+			Screen.lockCursor = false;
+			paused = true;
+		}
 	}
 }
