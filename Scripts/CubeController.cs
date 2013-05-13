@@ -16,14 +16,12 @@ public class CubeController : MonoBehaviour {
 	
 	}
 	
-	/*
 	void OnTriggerStay(Collider other)
 	{
-		if (other.gameObject.tag == "Player")
+		if (other.gameObject.tag == "Player" || other.gameObject.tag == "Enemy" )
 		{
 			Camera.mainCamera.GetComponent<SceneController>().cubeCharges++;
 			Destroy(this.gameObject);
 		}
 	}
-	*/
 }
