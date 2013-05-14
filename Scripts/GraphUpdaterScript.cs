@@ -16,6 +16,7 @@ public class GraphUpdaterScript : MonoBehaviour {
 	
 	public void UpdateGraph()
 	{
-		GetComponent<GraphUpdateScene>().Apply ();
+		GetComponent<GraphUpdateScene>().Apply();
+		Debug.Log("Graph updated automatically");
 	}
 }

@@ -29,12 +29,14 @@ public class PlayerCubeControl : MonoBehaviour {
 			{
 				GetFocusedGrowScript();
 				if(CubeGrowScript != null) { CubeGrowScript.Invoke("growCube",0); }
+				UpdateGraph();
 			}
 			
 			if (Input.GetMouseButtonDown(1))
 			{
 				GetFocusedGrowScript();
 				if(CubeGrowScript != null) { CubeGrowScript.Invoke("shrinkCube",0); }
+				UpdateGraph();
 			}
 		}
 	}
@@ -53,5 +55,11 @@ public class PlayerCubeControl : MonoBehaviour {
 			else { CubeGrowScript = null; }
 		}
 		else { CubeGrowScript = null; }
+	}
+	
+	public void UpdateGraph()
+	{
+		GetComponent<GraphUpdateScene>().Apply();
+		Debug.Log("Graph updated");
 	}
 }

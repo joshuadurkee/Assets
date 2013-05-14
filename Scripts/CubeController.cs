@@ -22,6 +22,8 @@ public class CubeController : MonoBehaviour {
 		{
 			Camera.mainCamera.GetComponent<SceneController>().cubeCharges++;
 			Destroy(this.gameObject);
+			//Update the pathfinding grid
+			Camera.mainCamera.GetComponent<GraphUpdateScene>().Apply();
 		}
 	}
 }
